@@ -31,6 +31,7 @@ const {
   StackScrollMouseWheelTool,
   ToolGroupManager,
   ZoomTool,
+  PlanarRotateTool,
   utilities: csToolsUtilities,
 } = cornerstoneTools;
 const { MouseBindings } = csToolsEnums;
@@ -143,6 +144,53 @@ addButtonToToolbar({
   },
   container: group1,
 });
+addButtonToToolbar({
+  title: 'Switch To SAGITTAL MPR',
+  onClick: async () => {
+    // Get the rendering engine
+    const renderingEngine = getRenderingEngine(renderingEngineId);
+
+    const viewport = renderingEngine.getViewport(
+      viewportIds[0]
+    ) as cornerstone.Types.IVolumeViewport;
+
+    if (viewport.type === ViewportType.ORTHOGRAPHIC) {
+      viewport.setOrientation(cornerstone.Enums.OrientationAxis.SAGITTAL);
+    }
+  },
+  container: group1,
+});
+addButtonToToolbar({
+  title: 'Switch To CORONAL MPR',
+  onClick: async () => {
+    // Get the rendering engine
+    const renderingEngine = getRenderingEngine(renderingEngineId);
+
+    const viewport = renderingEngine.getViewport(
+      viewportIds[0]
+    ) as cornerstone.Types.IVolumeViewport;
+
+    if (viewport.type === ViewportType.ORTHOGRAPHIC) {
+      viewport.setOrientation(cornerstone.Enums.OrientationAxis.CORONAL);
+    }
+  },
+  container: group1,
+});
+addButtonToToolbar({
+  title: 'Change Rotation',
+  onClick: async () => {
+    // Get the rendering engine
+    const renderingEngine = getRenderingEngine(renderingEngineId);
+
+    const viewport = renderingEngine.getViewport(
+      viewportIds[0]
+    ) as cornerstone.Types.IVolumeViewport;
+    const rotation = viewport.getRotation();
+    viewport.setProperties({ rotation: rotation + 10 });
+    viewport.render();
+  },
+  container: group1,
+});
 
 // ============================= //
 
@@ -158,6 +206,7 @@ async function run() {
   cornerstoneTools.addTool(StackScrollMouseWheelTool);
   cornerstoneTools.addTool(PanTool);
   cornerstoneTools.addTool(ZoomTool);
+  cornerstoneTools.addTool(PlanarRotateTool);
 
   // Define a tool group, which defines how mouse events map to tool commands for
   // Any viewport using the group
@@ -168,6 +217,7 @@ async function run() {
   toolGroup.addTool(StackScrollMouseWheelTool.toolName);
   toolGroup.addTool(PanTool.toolName);
   toolGroup.addTool(ZoomTool.toolName);
+  toolGroup.addTool(PlanarRotateTool.toolName);
 
   // Set the initial state of the tools, here we set one tool active on left click.
   // This means left click will draw that tool.
@@ -178,7 +228,7 @@ async function run() {
       },
     ],
   });
-  toolGroup.setToolActive(ZoomTool.toolName, {
+  toolGroup.setToolActive(PlanarRotateTool.toolName, {
     bindings: [
       {
         mouseButton: MouseBindings.Secondary,
